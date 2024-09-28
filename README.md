@@ -767,3 +767,43 @@ N       14352
 P@1     0.895
 R@1     0.895
 
+### Improve Model: 
+
+#### preprocessing the data
+A crude normalization can be obtained using command line tools such as sed and tr:
+>> cat all_tickets.txt | sed -e "s/\([.\!?,'/()]\)/ \1 /g" | tr "[:upper:]" "[:lower:]" > tickets.preprocessed.txt
+>> head -n 33486 tickets.preprocessed.txt > tickets.train
+>> tail -n 14352 tickets.preprocessed.txt > tickets.valid
+
+Train a new model: 
+>> fastText-0.9.2/fasttext supervised -input tickets.train -output model_ticket
+Output: 
+Read 1M words
+Number of words:  11093
+Number of labels: 9
+Progress: 100.0% words/sec/thread:  836397 lr:  0.000000 avg.loss:  0.227094 ETA:   0h 0m 0s
+
+The total number of words decrease from 13k to 11k. 
+
+>> fastText-0.9.2/fasttext test model_ticket.bin tickets.valid
+N       14352
+P@1     0.927
+R@1     0.927
+
+Although the precise number is different but we also observe a similar trend compare to the tutorial thanks to the pre-processing. The vocabulary is smaller (from 13k words to 11k). The precision is also starting to go up by 1%!
+
+
+#### word n-grams
+>> fastText-0.9.2/fasttext supervised -input tickets.train -output model_ticket -lr 1.0 -epoch 25 -wordNgrams 2
+Read 1M words
+Number of words:  11093
+Number of labels: 9
+Progress: 100.0% words/sec/thread:  499870 lr:  0.000000 avg.loss:  0.003626 ETA:   0h 0m 0s
+
+>> fastText-0.9.2/fasttext test model_ticket.bin tickets.valid
+N       14352
+P@1     0.976
+R@1     0.976
+
+  The result is even better.The precision now is 97.6%. 
+
