@@ -674,7 +674,7 @@ Read 0M words
 Number of words:  8952
 Number of labels: 735
 Progress: 100.0% words/sec/thread:   19030 lr:  0.000000 avg.loss: 10.080169 ETA:   0h 0m 0s
-
+>> ./fasttext test model_cooking.bin cooking.valid
 N       3000
 P@1     0.166
 R@1     0.0718
@@ -722,7 +722,48 @@ R@-1    0.255
 
 
 ## Try on new dataset 
-Step 1: Set up environment by using pip: 
+<!-- Step 1: Set up environment by using pip: 
 >> pip install requests beautifulsoup4
 Step 2: Run the scraping code: 
 python scrape_data.py 
+
+https://www.kaggle.com/datasets/adisongoh/it-service-ticket-classification-dataset -->
+
+1. Download dataset using: 
+### Install Kaggle API
+pip install kaggle
+
+### Download the dataset
+kaggle datasets download -d adisongoh/it-service-ticket-classification-dataset
+
+### Unzip the downloaded file
+unzip it-service-ticket-classification-dataset.zip
+
+### Convert a CSV file to a TXT file while adding the prefix __label__ to the values in the "Topic_group" column: 
+awk -F, 'NR==1 {print; next} {print "__label__" $2, $0}' all_tickets_processed_improved_v3.csv > all_tickets.txt 
+
+<!-- mv all_tickets_processed_improved_v3.csv all_tickets.txt  -->
+2. Split the data into training and testing: 
+### Check how many entries in the dataset: 
+$ wc all_tickets.txt
+   47838  2100361 14568920 all_tickets.txt
+- Split the dataset into training and validation set: (70% and 30%)
+$ head -n 33486 all_tickets.txt > tickets.train
+$ tail -n 14352 all_tickets.txt > tickets.valid
+
+### First Classifier: 
+Run out first classifier by this command: 
+$ fastText-0.9.2/fasttext supervised -input tickets.train -output model_ticket
+Output: 
+Read 1M words
+Number of words:  13688
+Number of labels: 9
+Progress:  16.3% words/sec/thread:  879402 lr:  0.083690 avg.loss:  0.923751 ETProgress:  32.9% words/sec/thread:  887807 lr:  0.067093 avg.loss:  0.596394 ETProgress:  49.4% words/sec/thread:  905318 lr:  0.050602 avg.loss:  0.448394 ETProgress:  65.4% words/sec/thread:  907600 lr:  0.034555 avg.loss:  0.369345 ETProgress:  78.4% words/sec/thread:  874508 lr:  0.021640 avg.loss:  0.330661 ETProgress:  95.3% words/sec/thread:  885206 lr:  0.004714 avg.loss:  0.292644 ETProgress: 100.0% words/sec/thread:  799274 lr: -0.000024 avg.loss:  0.282090 ETProgress: 100.0% words/sec/thread:  799057 lr:  0.000000 avg.loss:  0.282090 ETA:   0h 0m 0s
+
+Test on validation data:
+$ fastText-0.9.2/fasttext test model_ticket.bin tickets.valid
+
+N       14352
+P@1     0.895
+R@1     0.895
+
