@@ -805,5 +805,22 @@ N       14352
 P@1     0.976
 R@1     0.976
 
-  The result is even better.The precision now is 97.6%. 
+The result is even better.The precision now is 97.6%. 
 
+
+#### Hierarchical softmax
+>> fastText-0.9.2/fasttext supervised -input tickets.train -output model_ticket -lr 1.0 -epoch 25 -wordNgrams 2 -bucket 200000 -dim 50 -loss hs
+Output: 
+Read 1M words
+Number of words:  11093
+Number of labels: 9
+Progress: 100.0% words/sec/thread:  725031 lr:  0.000000 avg.loss:  0.004239 ETA:   0h 0m 0s
+
+The processing time is faster. 
+
+>> fastText-0.9.2/fasttext test model_ticket.bin tickets.valid
+N       14352
+P@1     0.988
+R@1     0.988
+
+The result is even better.The precision now is 98.8%. 
