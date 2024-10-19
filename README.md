@@ -824,3 +824,6 @@ P@1     0.988
 R@1     0.988
 
 The result is even better.The precision now is 98.8%. 
+
+### Hyperparameter tuning
+>> bash tunning.sh 

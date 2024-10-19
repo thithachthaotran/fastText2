@@ -1,0 +1,2 @@
+Best parameters: lr=1.0, epoch=25, dim=50, ngram=3
+Best precision (P@1): 0.992
