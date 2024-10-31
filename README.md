@@ -9,9 +9,9 @@ $ unzip v0.9.2.zip
 Move to the fastText directory and build it:
 
 $ cd fastText-0.9.2
-# for command line tool :
+For command line tool :
 $ make
-# for python bindings :
+For python bindings :
 $ pip install .
 
 
@@ -20,13 +20,15 @@ $ pip install .
 $ wget https://dl.fbaipublicfiles.com/fasttext/data/cooking.stackexchange.tar.gz && tar xvzf cooking.stackexchange.tar.gz
 
 $ head cooking.stackexchange.txt
-Output: 
+
+$ Output: 
 __label__sauce __label__cheese How much does potato starch affect a cheese sauce recipe?
 __label__food-safety __label__acidity Dangerous pathogens capable of growing in acidic environments
 __label__cast-iron __label__stove How do I cover up the white spots on my cast iron stove?
 
 - Use this bash to check number of examples in the full dataset: 
 $ wc cooking.stackexchange.txt
+
 Output: 15404  169582 1401900 cooking.stackexchange.txt
 (This is similar to our tutorial)
 
@@ -37,6 +39,7 @@ $ tail -n 3000 cooking.stackexchange.txt > cooking.valid
 ### First Classifier: 
 Run out first classifier by this command: 
 $ ./fasttext supervised -input cooking.train -output model_cooking
+
 Output: 
 Read 0M words
 Number of words:  14543
@@ -47,6 +50,7 @@ Total number of words is 14543 which is smaller than the tutorial which has 1459
 
 Test on validation data:
 $ ./fasttext test model_cooking.bin cooking.valid
+
 Output: 
 N       3000
 P@1     0.139
@@ -64,7 +68,8 @@ A crude normalization can be obtained using command line tools such as sed and t
 
 Train a new model: 
 >> ./fasttext supervised -input cooking.train -output model_cooking
-Output: 
+
+>> Output: 
 Read 0M words
 Number of words:  8952
 Number of labels: 735
@@ -79,12 +84,14 @@ Although the precise number is different but we also observe a similar trend com
 
 #### word n-grams
 >> ./fasttext supervised -input cooking.train -output model_cooking -lr 1.0 -epoch 25 -wordNgrams 2
-Read 0M words
+
+>> Read 0M words
 Number of words:  8952
 Number of labels: 735
 Progress: 100.0% words/sec/thread:   19590 lr:  0.000000 avg.loss:  3.228167 ETA:   0h 0m 0s
 
 >> ./fasttext test model_cooking.bin cooking.valid
+
 N       3000
 P@1     0.609
 R@1     0.263
@@ -93,6 +100,7 @@ The result is even better.
 
 #### Hierarchical softmax
 >> ./fasttext supervised -input cooking.train -output model_cooking -lr 1.0 -epoch 25 -wordNgrams 2 -bucket 200000 -dim 50 -loss hs
+
 Output: 
 Read 0M words
 Number of words:  8952
@@ -103,12 +111,14 @@ The processing time is faster.
 
 #### Multi-label classification
 >> ./fasttext supervised -input cooking.train -output model_cooking -lr 0.5 -epoch 25 -wordNgrams 2 -bucket 200000 -dim 50 -loss one-vs-all
+
 Read 0M words
 Number of words:  8952
 Number of labels: 735
 Progress: 100.0% words/sec/thread:   29994 lr:  0.000000 avg.loss:  4.091903 ETA:   0h 0m 0s
 
 >> ./fasttext test model_cooking.bin cooking.valid -1 0.5 
+
 N       3000
 P@-1    0.681
 R@-1    0.255
@@ -149,6 +159,7 @@ $ tail -n 14352 all_tickets.txt > tickets.valid
 ### First Classifier: 
 Run out first classifier by this command: 
 $ fastText-0.9.2/fasttext supervised -input tickets.train -output model_ticket
+
 Output: 
 Read 1M words
 Number of words:  13688
@@ -167,11 +178,14 @@ R@1     0.895
 #### preprocessing the data
 A crude normalization can be obtained using command line tools such as sed and tr:
 >> cat all_tickets.txt | sed -e "s/\([.\!?,'/()]\)/ \1 /g" | tr "[:upper:]" "[:lower:]" > tickets.preprocessed.txt
+
 >> head -n 33486 tickets.preprocessed.txt > tickets.train
+
 >> tail -n 14352 tickets.preprocessed.txt > tickets.valid
 
 Train a new model: 
 >> fastText-0.9.2/fasttext supervised -input tickets.train -output model_ticket
+
 Output: 
 Read 1M words
 Number of words:  11093
@@ -181,6 +195,7 @@ Progress: 100.0% words/sec/thread:  836397 lr:  0.000000 avg.loss:  0.227094 ETA
 The total number of words decrease from 13k to 11k. 
 
 >> fastText-0.9.2/fasttext test model_ticket.bin tickets.valid
+
 N       14352
 P@1     0.927
 R@1     0.927
@@ -190,12 +205,14 @@ Although the precise number is different but we also observe a similar trend com
 
 #### word n-grams
 >> fastText-0.9.2/fasttext supervised -input tickets.train -output model_ticket -lr 1.0 -epoch 25 -wordNgrams 2
+
 Read 1M words
 Number of words:  11093
 Number of labels: 9
 Progress: 100.0% words/sec/thread:  499870 lr:  0.000000 avg.loss:  0.003626 ETA:   0h 0m 0s
 
 >> fastText-0.9.2/fasttext test model_ticket.bin tickets.valid
+
 N       14352
 P@1     0.976
 R@1     0.976
@@ -205,6 +222,7 @@ The result is even better.The precision now is 97.6%.
 
 #### Hierarchical softmax
 >> fastText-0.9.2/fasttext supervised -input tickets.train -output model_ticket -lr 1.0 -epoch 25 -wordNgrams 2 -bucket 200000 -dim 50 -loss hs
+
 Output: 
 Read 1M words
 Number of words:  11093
@@ -214,6 +232,7 @@ Progress: 100.0% words/sec/thread:  725031 lr:  0.000000 avg.loss:  0.004239 ETA
 The processing time is faster. 
 
 >> fastText-0.9.2/fasttext test model_ticket.bin tickets.valid
+
 N       14352
 P@1     0.988
 R@1     0.988
@@ -222,4 +241,5 @@ The result is even better.The precision now is 98.8%.
 
 ### Hyperparameter tuning
 >> bash tunning.sh 
+
 The hyperparameter result is saved in "best_results.txt"
